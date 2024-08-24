@@ -39,10 +39,10 @@ public class PrometheusService {
 	
 	@Async
 	public CompletableFuture<String> fetch(String database) throws SQLException {
-		CollectorRegistry collectorRegistry = applicationContext.getBean(database+".toml", CollectorRegistry.class);
+		CollectorRegistry collectorRegistry = applicationContext.getBean(database, CollectorRegistry.class);
 		Map<String, List<PrometheusMetric>> metricList = new HashMap<>();
 		List<Collector.Describable> metrics = new ArrayList<Collector.Describable>();
-		List<PrometheusMetric> ls = configClass.getMetrics().get(database+".toml");
+		List<PrometheusMetric> ls = configClass.getMetrics().get(database);
 		if(!(ls.get(ls.size()-1).getSql().equalsIgnoreCase("select 1 as DUMMY from dual"))) {
 		Gauge gauge = Gauge.build().name("oracledb_up").help("oracledb_up Whether the oracle db is up").labelNames("DUMMY")
 				.register(collectorRegistry);
@@ -51,7 +51,7 @@ public class PrometheusService {
 		PrometheusMetric metric = new PrometheusMetric(metrics, Arrays.asList("DUMMY"), Arrays.asList("DUMMY"), "GAUGE",
 				"select 1 as DUMMY from dual", 0.00);
 		ls.add(metric);
-		metricList.put(database+".toml",ls);
+		metricList.put(database,ls);
 		}
 		PrometheusMeterRegistry registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT,
 				collectorRegistry, Clock.SYSTEM);

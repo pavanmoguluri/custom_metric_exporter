@@ -49,7 +49,7 @@ public class PrometheusRepository {
 				Class.forName(driver);
 			con = DriverManager.getConnection(url, username, password);
 			Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-			List<PrometheusMetric> metrics = metricmap.get(database + ".toml");
+			List<PrometheusMetric> metrics = metricmap.get(database);
 			ResultSet resultSet = stmt.executeQuery("select 1 as DUMMY from dual");
 			double d = 0.00;
 			while (resultSet.next()) {
@@ -167,7 +167,7 @@ public class PrometheusRepository {
 			if (con != null) {
 				con.close();
 			}else {
-				List<PrometheusMetric> metrics = metricmap.get(database + ".toml");
+				List<PrometheusMetric> metrics = metricmap.get(database);
 				PrometheusMetric metric = metrics.get(metrics.size() - 1);
 				List<Collector.Describable> metricList = metric.getMetricList();
 					List<String> returnedLabels = new ArrayList<>();
