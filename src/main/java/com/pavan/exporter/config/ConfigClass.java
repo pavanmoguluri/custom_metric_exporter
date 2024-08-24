@@ -40,8 +40,9 @@ public class ConfigClass implements ImportBeanDefinitionRegistrar {
 		DefineMetrics df = new DefineMetrics();
 		BeanDefinitionBuilder b = BeanDefinitionBuilder.rootBeanDefinition(CollectorRegistry.class);
 		for (File file : folder.listFiles()) {
-			defaultListableBeanFactory.registerBeanDefinition(file.getName(), b.getBeanDefinition());
-			CollectorRegistry collectorRegistry = applicationContext.getBean(file.getName(), CollectorRegistry.class);
+			String fileNameStr = file.getName().split("\\.")[0];
+			defaultListableBeanFactory.registerBeanDefinition(fileNameStr, b.getBeanDefinition());
+			CollectorRegistry collectorRegistry = applicationContext.getBean(fileNameStr, CollectorRegistry.class);
 			df.createMetrics2(collectorRegistry, file, metricList);
 			
 		}

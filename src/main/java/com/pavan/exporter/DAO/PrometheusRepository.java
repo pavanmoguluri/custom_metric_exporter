@@ -49,7 +49,7 @@ public class PrometheusRepository {
 				Class.forName(driver);
 			con = DriverManager.getConnection(url, username, password);
 			Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-			List<PrometheusMetric> metrics = metricmap.get(database + ".toml");
+			List<PrometheusMetric> metrics = metricmap.get(database);
 			ResultSet resultSet = stmt.executeQuery("select 1 as DUMMY from dual");
 			double d = 0.00;
 			while (resultSet.next()) {
@@ -126,9 +126,9 @@ public class PrometheusRepository {
 
 					metric.setInitial_exec(false);
 				}
-				pdbSidList = this.getPdbSidList(stmt);
-				PluggableDB pluggableDB = new PluggableDB ();
-				pdbresp = pluggableDB.connectPdb(url,username,password,pdbSidList,database,directory);
+//				pdbSidList = this.getPdbSidList(stmt);
+//				PluggableDB pluggableDB = new PluggableDB ();
+//				pdbresp = pluggableDB.connectPdb(url,username,password,pdbSidList,database,directory);
 			} else {
 				PrometheusMetric metric = metrics.get(metrics.size() - 1);
 				List<String> labels = metric.getLabels();
@@ -167,7 +167,7 @@ public class PrometheusRepository {
 			if (con != null) {
 				con.close();
 			}else {
-				List<PrometheusMetric> metrics = metricmap.get(database + ".toml");
+				List<PrometheusMetric> metrics = metricmap.get(database);
 				PrometheusMetric metric = metrics.get(metrics.size() - 1);
 				List<Collector.Describable> metricList = metric.getMetricList();
 					List<String> returnedLabels = new ArrayList<>();
@@ -188,9 +188,9 @@ public class PrometheusRepository {
 		resturnResult.put("pdblist",PdbListStr);
 		resturnResult.put("CdbMetrcis", mainMetrics);
 		resturnResult.putAll(pdbresp);
-		String finalResult = resturnResult.entrySet().stream().map(e -> e.getKey() + ":" + e.getValue())
-                .collect(Collectors.joining(";"));
-		return finalResult;
+//		String finalResult = resturnResult.entrySet().stream().map(e -> e.getKey() + ":" + e.getValue())
+//                .collect(Collectors.joining(";"));
+		return registry.scrape(TextFormat.CONTENT_TYPE_OPENMETRICS_100);
 	}
 	public List<String> getPdbSidList(Statement stmt) throws SQLException {
 		List<String> pdbServ = new ArrayList<String>();

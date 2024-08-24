@@ -1,6 +1,7 @@
 package com.pavan.exporter.controller;
 
 import java.sql.SQLException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +19,8 @@ public class PrometheusController {
 	PrometheusService service;
 
 	@GetMapping("/metrics/{database}")
-	public String endPointForPrometheus(@PathVariable String database) throws SQLException, InterruptedException, ExecutionException {
-		String result = service.fetch(database);
-		return result;
+	public CompletableFuture<String> endPointForPrometheus(@PathVariable String database) throws SQLException, InterruptedException, ExecutionException {
+		return service.fetch(database);
 	}
 
 	@PutMapping("/reset")
