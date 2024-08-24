@@ -7,9 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.pavan.exporter.DAO.PrometheusRepository;
@@ -35,7 +37,8 @@ public class PrometheusService {
 	@Autowired
 	ApplicationContext applicationContext;
 	
-	public String fetch(String database) throws SQLException {
+	@Async
+	public CompletableFuture<String> fetch(String database) throws SQLException {
 		CollectorRegistry collectorRegistry = applicationContext.getBean(database+".toml", CollectorRegistry.class);
 		Map<String, List<PrometheusMetric>> metricList = new HashMap<>();
 		List<Collector.Describable> metrics = new ArrayList<Collector.Describable>();
@@ -52,8 +55,15 @@ public class PrometheusService {
 		}
 		PrometheusMeterRegistry registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT,
 				collectorRegistry, Clock.SYSTEM);
-		String repoResult = repo.setMetrics(registry, database, configClass.getMetrics());
-		return repoResult;
+		return CompletableFuture.supplyAsync(()->{
+			String resultStr = null;
+			try {
+				resultStr = repo.setMetrics(registry, database, configClass.getMetrics());
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return resultStr;
+		});
 	}
 
 	public void reset() {

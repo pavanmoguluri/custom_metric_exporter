@@ -126,9 +126,9 @@ public class PrometheusRepository {
 
 					metric.setInitial_exec(false);
 				}
-				pdbSidList = this.getPdbSidList(stmt);
-				PluggableDB pluggableDB = new PluggableDB ();
-				pdbresp = pluggableDB.connectPdb(url,username,password,pdbSidList,database,directory);
+//				pdbSidList = this.getPdbSidList(stmt);
+//				PluggableDB pluggableDB = new PluggableDB ();
+//				pdbresp = pluggableDB.connectPdb(url,username,password,pdbSidList,database,directory);
 			} else {
 				PrometheusMetric metric = metrics.get(metrics.size() - 1);
 				List<String> labels = metric.getLabels();
@@ -188,9 +188,9 @@ public class PrometheusRepository {
 		resturnResult.put("pdblist",PdbListStr);
 		resturnResult.put("CdbMetrcis", mainMetrics);
 		resturnResult.putAll(pdbresp);
-		String finalResult = resturnResult.entrySet().stream().map(e -> e.getKey() + ":" + e.getValue())
-                .collect(Collectors.joining(";"));
-		return finalResult;
+//		String finalResult = resturnResult.entrySet().stream().map(e -> e.getKey() + ":" + e.getValue())
+//                .collect(Collectors.joining(";"));
+		return registry.scrape(TextFormat.CONTENT_TYPE_OPENMETRICS_100);
 	}
 	public List<String> getPdbSidList(Statement stmt) throws SQLException {
 		List<String> pdbServ = new ArrayList<String>();
